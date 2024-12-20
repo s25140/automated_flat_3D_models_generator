@@ -169,3 +169,20 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+.conda/
+_notes/
+Cropping/U-2-Net/
+Datasets/
+AutogluonModels/
+tmp/
+mlruns/
+/models/
+/scrapped_images1/
+
+
+*.log
+*.parquet
+*.onnx
+*.pth
+*.h5

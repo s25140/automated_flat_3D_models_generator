@@ -1,0 +1,4 @@
+build PyTorch Docker container, then run:
+
+conda install anaconda::scikit-image
+conda install conda-forge::matplotlib

@@ -1,0 +1,17 @@
+# Python 3.10.0
+scikit_learn==1.6.0
+pandas==2.2.3
+opencv-python==4.10.0.84
+tensorflow==2.18.0
+
+## hugging-face test
+transformers==4.47.0
+torch==2.5.1
+torchvision==0.20.1
+torchaudio==2.5.1
+autogluon.tabular==1.2
+
+mlflow==2.19.0
+
+## 3D models generation (non-heuristic)
+trimesh==4.5.3
