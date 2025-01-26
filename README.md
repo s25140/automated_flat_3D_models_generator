@@ -28,8 +28,8 @@ Plik z implementacją algorytmu: [crop_generate.py](./crop_generate.py)
 ### Inne algorytmy
 - Wstępne przetwarzanie obrazów dla CNN: [local_package/ConvNN.py](./local_package/ConvNN.py)
     ![alt text](assets/image-4.png)
-- Przygotowanie danych do zegmentacji [Cropping/assets/images_preparation.ipynb](./Cropping/assets/images_preparation.ipynb)
-- Obcięcie zdjęć (obcięćie jak niektórych zdjęć z datasetu `trim_to_edges()`, tak i nowych obrazów `crop_new_assets/image()`): [local_package/Cropping.py](./local_package/Cropping.py)
+- Przygotowanie danych do zegmentacji [Cropping/images_preparation.ipynb](./Cropping/images_preparation.ipynb)
+- Obcięcie zdjęć (obcięćie jak niektórych zdjęć z datasetu `trim_to_edges()`, tak i nowych obrazów `crop_new_image()`): [local_package/Cropping.py](./local_package/Cropping.py)
 - Ewaluacja modeli obcięcia [Cropping/results_evaluation.ipynb](./Cropping/results_evaluation.ipynb)
 ![alt text](assets/image-5.png)
 
