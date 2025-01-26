@@ -172,13 +172,17 @@ cython_debug/
 
 .conda/
 _notes/
-Cropping/U-2-Net/
+Cropping/U-2-Net/*
+!Cropping/U-2-Net/model
+!Cropping/U-2-Net/u2net_single.py
+!Cropping/U-2-Net/data_loader.py
 Datasets/
 AutogluonModels/
 tmp/
 mlruns/
 /models/
 /scrapped_images1/
+DIS5K-Cache
 
 
 *.log

@@ -4,6 +4,8 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tensorflow.keras.optimizers import SGD, Adam
+from tensorflow.keras.metrics import Precision, Recall
+import tensorflow as tf
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
@@ -53,13 +55,18 @@ def create_model(dropout_rate=0.533):
 
 # Training function
 def train_model(optimize_hyperparameters=False, mlflow_name=None):
-    model = create_model(dropout_rate=0.49496)
+    model = create_model(dropout_rate=0.533)
     
-    optimizer = SGD(learning_rate=0.001438, momentum=0.767624)
-    #optimizer = SGD(learning_rate=0.01, momentum=0.1)
-    #optimizer = Adam(learning_rate=0.001)
+    optimizer = SGD(learning_rate=0.059437608892229515, momentum=0.5938654934947398)
+    precision = Precision(name='precision')
+    recall = Recall(name='recall')
+    def f1_score(y_true, y_pred):
+        p = precision(y_true, y_pred)
+        r = recall(y_true, y_pred)
+        return 2 * ((p * r) / (p + r + tf.keras.backend.epsilon()))
+    metrics=["accuracy", precision, recall, f1_score]
 
-    model.compile(optimizer=optimizer, loss="binary_crossentropy", metrics=["accuracy"])
+    model.compile(optimizer=optimizer, loss="binary_crossentropy", metrics=metrics)
     
     #example_input = pd.DataFrame(next(iter(train_images_gen))[0]) # problem with batch size 32
 
@@ -106,4 +113,4 @@ def train_model(optimize_hyperparameters=False, mlflow_name=None):
             print("Best hyperparameters: ", study.best_params)
 
 if __name__ == "__main__":
-    train_model(optimize_hyperparameters=True, mlflow_name="AIMv2_NN_class_with_optimized_hyperparameters")
+    train_model(optimize_hyperparameters=False, mlflow_name="AIMv2_NN_class_with_optimized_hyperparameters")

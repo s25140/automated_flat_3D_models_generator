@@ -5,6 +5,69 @@ import os
 
 debug = False
 
+
+# look through pixels from the corners and find the first non-white pixel
+        
+def get_corners(image, MAX_RANGE_DEV=50):
+    x_margin = len(image[0])/MAX_RANGE_DEV
+    y_margin = len(image)/MAX_RANGE_DEV
+    print(x_margin, y_margin)
+    white_color_threshold = 150
+
+    top_left, top_right, bottom_left, bottom_right = None, None, None, None
+    # top left
+    for y in range(int(y_margin)):
+        for x in range(int(x_margin)):
+            #print(x, y, image[y, x])
+            if not all([i > white_color_threshold for i in image[y, x]]) and x < x_margin and y < y_margin:
+                top_left = (x, y)
+                break
+        else:
+            continue
+        break
+    # bottom left
+    for y in range(len(image)-1, int(y_margin), -1):
+        for x in range(int(x_margin)):
+            #print(x, y, image[y, x])
+            if not all([i > white_color_threshold for i in image[y, x]]) and x < x_margin and y > len(image)-y_margin:
+                bottom_left = (x, y)
+                break
+        else:
+            continue
+        break
+    # top right
+    for x in range(len(image[0])-1, int(x_margin), -1):
+        for y in range(int(y_margin)):
+            #print(x, y, image[y, x])
+            if not all([i > white_color_threshold for i in image[y, x]]) and x > len(image[0])-x_margin and y < y_margin:
+                top_right = (x, y)
+                break
+        else:
+            continue
+        break
+    # bottom right
+    for x in range(len(image[0])-1, int(x_margin), -1):
+        for y in range(len(image)-1, int(y_margin), -1):
+            #print(x, y, image[y, x])
+            if not all([i > white_color_threshold for i in image[y, x]]) and x > len(image[0])-x_margin and y > len(image)-y_margin:
+                bottom_right = (x, y)
+                break
+        else:
+            continue
+        break
+
+    return top_left, top_right, bottom_left, bottom_right
+
+
+def crop_new_image(image, mask_image):
+    # resize mask to match original image size
+    mask_image = cv2.resize(mask_image, (len(image[0]), len(image)), resample=cv2.INTER_LINEAR)
+    # crop
+    top_left, top_right, bottom_left, bottom_right = get_corners(mask_image)
+    crop_with_perspective(image, top_left, top_right, bottom_left, bottom_right)
+    return image
+
+
 def trim_to_edges(image, img_name):
     if not img_name.startswith('19_'):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -69,62 +132,11 @@ def trim_to_edges(image, img_name):
             bottom_left = (x, y+h)
             bottom_right = (x+w, y+h)
 
-        if img_name.startswith('20_'):
+        if img_name.startswith('20_'):# or img_name.startswith('22_'):
             image = crop_with_perspective(image, top_left, top_right, bottom_left, bottom_right)
     
-    if img_name.startswith('19_') or img_name.startswith('20_'):
-        # stratch the image perspective to remove white pixels
-        # look through pixels from the corners and find the first non-white pixel
-        #image = cv2.resize(image, (0, 0), fx=2, fy=2)
+    if img_name.startswith('19_') or img_name.startswith('20_') or img_name.startswith('22_'):
         
-        def get_corners(image, MAX_RANGE_DEV=50):
-            x_margin = len(image[0])/MAX_RANGE_DEV
-            y_margin = len(image)/MAX_RANGE_DEV
-            white_color_threshold = 200
-
-            top_left, top_right, bottom_left, bottom_right = None, None, None, None
-            # top left
-            for y in range(int(y_margin)):
-                for x in range(int(x_margin)):
-                    #print(x, y, image[y, x])
-                    if not all([i > white_color_threshold for i in image[y, x]]) and x < x_margin and y < y_margin:
-                        top_left = (x, y)
-                        break
-                else:
-                    continue
-                break
-            # bottom left
-            for y in range(len(image)-1, int(y_margin), -1):
-                for x in range(int(x_margin)):
-                    #print(x, y, image[y, x])
-                    if not all([i > white_color_threshold for i in image[y, x]]) and x < x_margin and y > len(image)-y_margin:
-                        bottom_left = (x, y)
-                        break
-                else:
-                    continue
-                break
-            # top right
-            for x in range(len(image[0])-1, int(x_margin), -1):
-                for y in range(int(y_margin)):
-                    #print(x, y, image[y, x])
-                    if not all([i > white_color_threshold for i in image[y, x]]) and x > len(image[0])-x_margin and y < y_margin:
-                        top_right = (x, y)
-                        break
-                else:
-                    continue
-                break
-            # bottom right
-            for x in range(len(image[0])-1, int(x_margin), -1):
-                for y in range(len(image)-1, int(y_margin), -1):
-                    #print(x, y, image[y, x])
-                    if not all([i > white_color_threshold for i in image[y, x]]) and x > len(image[0])-x_margin and y > len(image)-y_margin:
-                        bottom_right = (x, y)
-                        break
-                else:
-                    continue
-                break
-
-            return top_left, top_right, bottom_left, bottom_right
         if img_name.startswith('20_'):
             tmp_top_left, tmp_top_right, tmp_bottom_left, tmp_bottom_right = get_corners(image)
             if None in [tmp_top_left, tmp_top_right, tmp_bottom_left, tmp_bottom_right]:
@@ -141,8 +153,17 @@ def trim_to_edges(image, img_name):
             new_bottom_left[1] = bottom_left[1]-len(image)+tmp_bottom_left[1]
             new_bottom_right[0] = bottom_right[0]-len(image[0])+tmp_bottom_right[0]
             new_bottom_right[1] = bottom_right[1]-len(image)+tmp_bottom_right[1]
+            top_left, top_right, bottom_left, bottom_right = new_top_left, new_top_right, new_bottom_left, new_bottom_right
+        elif img_name.startswith('22_'):
+            top_left, top_right, bottom_left, bottom_right = get_corners(image, MAX_RANGE_DEV=5)
+            print(top_left, top_right, bottom_left, bottom_right)
+            if None in [top_left, top_right, bottom_left, bottom_right]:
+                top_left, top_right, bottom_left, bottom_right = get_corners(image, MAX_RANGE_DEV=5)
+            if None in [top_left, top_right, bottom_left, bottom_right]:
+                raise Exception(f'Error for {img_name}: Could not find corners with perspective stretching.')
         else:
             top_left, top_right, bottom_left, bottom_right = get_corners(image)
+            print(top_left, top_right, bottom_left, bottom_right)
             if None in [top_left, top_right, bottom_left, bottom_right]:
                 top_left, top_right, bottom_left, bottom_right = get_corners(image, MAX_RANGE_DEV=30)
             if None in [top_left, top_right, bottom_left, bottom_right]:
